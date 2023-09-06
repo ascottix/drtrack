@@ -1,0 +1,591 @@
+INDEX, HelpOnHelp=0
+
+  The use of this help system is straightforward and requires only a
+few keys:
+  cursor keys   browse text
+  [Tab]         select next topic
+  [Shift][Tab]  select previous topic
+  [Enter]       jump to selected topic
+  [Esc]         close help
+  [Alt][F1]     previous help
+
+&BHow to:&N
+        @MODDTS[MOD and DTS overview   ]
+        @MODED[edit a song            ]
+        @PLAYER[play the current song  ]
+        @SAMPED[edit and play samples  ]
+MODED, Song/module editor=2
+  This is the place where you write and modify @SONGSTRUC[songs].
+
+&BCursor movement:
+        [Left]          previous field
+        [Right]         next field
+        [Up]            previous frame
+        [Down]          next frame
+        [Home]          jump to note field
+        [End]           jump to last field
+
+        [PgUp]          previous page
+        [PgDn]          next page
+        [^Left]         previous track
+        [^Right]        next track
+        [^PgUp]         first frame
+        [^PgDn]         last frame
+        [^Home]         top of screen
+        [^End]          bottom of screen
+        [-]             previous pattern
+        [+]             next pattern
+        [Alt][F1]..[F4] jump to frame 00..48
+
+        [Tab]           jump to the @ORDERED[order editor]
+
+&BInput and output, global commands:
+        [Alt][C]        clear song (doesn't clear samples)
+        [Alt][D]        display memory informations
+        [Alt][E]        toggle 43/50 line mode (EVA/VGA only)
+        [Alt][I]        edit instruments
+        [Alt][L]        load module
+        [Alt][M]        make SoundTracker compatible @MODDTS[module]
+        [Alt][O]        OS shell
+        [Alt][P]        @PLAYER[play] current pattern
+        [Alt][R]        read pattern from disk
+        [Alt][S]        save current song as @MODDTS[DTS]
+        [Alt][V]        mixer control (SoundBlaster Pro only)
+        [Alt][W]        write pattern to disk
+        [Alt][X]        exit
+
+&BSeealso:
+        @BLOCKS[blocks          ]
+        @AUTOJUMP[automatic jump  ]
+        @PLAYER[playing songs   ]
+        @MACROREC[macros          ]
+SONGSTRUC, The structure of a module
+  A module is made of patterns, which are similar to musical measures.
+Each pattern contains 64 frames, and one frame groups up to four @NOTE[notes]
+that are played at the same time.
+  Let's see an example:
+
+        D-3 01    C-2 02    D-2 02    F#2 02
+        A-3 01    ... ..    ... ..    ... ..
+        F#3 01    ... ..    ... ..    ... ..
+        A-3 01    ... ..    ... ..    ... ..
+        D-3 01    A#1 02    D-2 02    G-2 02
+        A#3 01    ... ..    ... ..    ... ..
+        G-3 01    ... ..    ... ..    ... ..
+        A#3 01    ... ..    ... ..    ... ..
+        and so on...
+
+  The first frame,
+
+        D-3 01    C-2 02    D-2 02    F#2 02
+
+plays a D7 chord with the last three voices, and the first voice
+starts playing the main theme with a different instrument.
+  Next comes
+
+        A-3 01    ... ..    ... ..    ... ..
+
+which keeps playing on the first track. The blank fields in the last
+three tracks mean that the sound must not be changed. The D7 chord is
+played until the fifth frame, when it becomes a G- chord. You cannot
+directly specify the duration of a note, it depends on the number of
+blank notes that follow.
+  When the last frame in a pattern has been played (or a "pattern
+break" @MODCMDS[command] is encountered) the player jumps to the first frame
+of the pattern that follows in the @ORDERED[order sequence].
+MACROREC, Keyboard macros
+  Macros are especially useful when you have to enter several times
+the same sequence of keys.
+
+  Up to 10 macros can be defined and assigned to a hotkey from
+[Alt][0] to [Alt][9]. When macro recording in on, all key presses are
+recorded into an internal buffer, you may then recall a sequence of
+keys by simply pressing the corresponding hotkey.
+
+  Note: macros cannot be nested and are disabled outside the song
+editor.
+
+&BCommands:
+        [^R]            toggle macro recording on/off
+ORDERED, Order editor
+  Song patterns are not played in sequential order: to allow
+repetitions and longer songs, the sequence in which patterns are
+actually played is stored in a separate index array.
+
+  Each index entry contains the number of the actual pattern to be
+played in that position or zero, which stays for "end of list".
+
+  For example, suppose that your order sequence looks like this:
+
+        ÉÍÍÍÍÑÍÍÍÍÍ»
+        º 00 ³   3 º
+        º 01 ³   1 º
+        º 02 ³ ..0 º
+        º 03 ³ ..0 º
+        :    ³     :
+        º 7D ³ ..0 º
+        º 7E ³ ..0 º
+        º 7F ³ ..0 º
+        ÈÍÍÍÍÏÍÍÍÍÍ¼
+
+  That means: play pattern three first, then pattern one, then stop.
+More precisely, sound is not stopped at the end of list, but rather
+execution is restarted from the beginning (i.e. from pattern three).
+
+  Of course you may specify the same pattern number more than once,
+this saves space if a pattern is to be played several times because
+you don't need to duplicate it in the song editor.
+
+  To edit the index entry at cursor simply type in the pattern number
+for that position.
+
+  &BCommands:
+        [Up]            previous entry
+        [Down]          next entry
+        [PgUp]          previous page
+        [PgDn]          next page
+        [Home]          search null pattern backward
+        [End]           search null pattern forward
+        [Del]           delete entry
+        [Ins]           insert entry
+        [^PgUp]         top of list
+        [^PgDn]         end of list
+        [^Home]         top of page
+        [^End]          end of page
+
+        [Tab]           song editor
+        [Enter]         edit pattern at cursor
+        [F5]..[F8]      toggle channels on/off
+        [^F3]/[^F4]     decrement/increment song speed
+        [F3]/[F4]       decrement/increment global volume
+        [^A]            add a semitone to entire song
+        [^S]            subtract a semitone from entire song
+
+        [Alt][E]        switch to 43/50 lines mode (EGA/VGA only)
+        [Alt][I]        @SAMPED[edit instruments]
+        [Alt][L]        load module
+        [Alt][O]        OS shell
+        [Alt][P]        @PLAYER[play entire song from cursor]
+        [Alt][V]        mixer control (SoundBlaster Pro only)
+        [Alt][X]        exit
+BLOCKS, Blocks
+  Blocks are used to perform operations on a group of notes. You can
+mark all from a single note to a track or pattern, the marked area is
+called a "block". Blocks can be copied, moved, deleted and manipulated
+in a number of ways, as shown below:
+        [^B]            mark block begin/end
+        [^T]            mark current track
+        [^L]            mark line block begin/end
+        [^P]            mark current pattern
+        [^U]            unmark block
+        [^C]            copy block (block is inserted at cursor)
+        [^O]            copy block (block overwrites underlying notes)
+        [^M]            move block
+        [^D]            delete block
+
+        [^A]            add a halftone to all marked notes
+        [^S]            subtract a halftone from all marked notes
+        [^V]            set marked notes to default sample
+        [^W]            wipe all marked notes
+AUTOJUMP, Automatic jump
+  Usually song editing is track oriented and you want the cursor to
+move vertically rather than horizontally. Also, you often need to
+move the cursor down two or four steps, according to the duration of
+the notes you are entering. The autojump feature gives you control
+upon these parameters, making it easier and faster to enter notes.
+
+        [^F5]..[^F8]    set autojump to 1,2,4,8
+        [^J]            toggle autojump on/off
+MODCMDS, SoundTracker commands
+  The command field of a @NOTE[note] tells the player that a special action
+is to be taken when that note is played.
+  There are basically two sets of commands: local commands modify only
+the note they refer to, global commands affect the entire song.
+  Here is the list of commands supported by Dr. Track:
+        @CMD0[Arpeggio       ]  (local)
+        @CMD1[Portamento up  ]  (local)
+        @CMD2[Portamento down]  (local)
+        @CMD3[Tone portamento]  (local)
+        @CMD4[Vibrato        ]  (local)
+        @CMDA[Volume slide   ]  (local)
+        @CMDB[Pattern jump   ]  (global)
+        @CMDC[Volume change  ]  (global)
+        @CMDD[Pattern break  ]  (global)
+        @CMDF[Speed change   ]  (global)
+CMD0, Arpeggio
+  Syntax:       0       second note/third note
+  Example:      C-2 01 047
+
+  The current note is changed at very high speed according to the
+parameter field. In the example above, the first note is C-2, the
+second note is E-2 (4 semitones up from C-2, see below) and the third
+is G-2 (7 halftones up from C-2). These three notes are played in
+sequence, one every 1/50th of second, so that it's almost impossibile
+to distinguish them. With this command effects like fast arpeggioes or
+trills are easily achieved.
+
+  + 0  + 1  + 2  + 3  + 4  + 5  + 6  + 7  + 8  + 9  + A  + B  + C ...
+  C-2  C#2  D-2  D#2  E-2  F-2  F#2  G-2  G#2  A-2  A#2  B-2  C-3 ...
+
+  If the parameter field contains no data (i.e. both auxiliary note
+displacements are zero), the first note is not modified and the
+command is displayed with a single dot.
+CMD1, Portamento up
+  Syntax:       1       speed
+  Example:      C-2 01 103
+
+  Increases the pitch of the current note.
+CMD2, Portamento down
+  Syntax:       2       speed
+  Example:      C-2 01 203
+
+  Decreases the pitch of the current note.
+CMD3, Tone portamento
+  Syntax:       destination note        [sample]        3       speed
+  Example:      E-2 01 305
+
+  The destination note is not played immediately, it is just used as
+an argument for the command. It's the current note pitch that moves
+towards the destination note, at the specified speed.
+  Suppose to have a track like this:
+
+        C-2 01 .00
+        ... .. ...
+        ... .. ...
+        E-2 01 305
+        ... .. 300
+        ... .. 300
+
+  When the player reads
+
+        E-2 01 305
+
+it doesn't play E-2. However, because the pitch of E-2 is higher than
+that of the last played note (C-2), the current pitch is increased.
+It's likely that the distination note is not reached within a single
+frame, so you have to repeat the tone portamento command until E-2 is
+actually played. Fortunately, you don't have to reenter the command in
+it's complete form, because the player remembers both the destination
+note and speed of the last command. Thus frames like
+
+        ... .. 300
+
+suffices to keep portamento going.
+  Moreover, when E-2 is reached any portamento command which is not in
+the complete form is ignored, so there's no need to know exactly how
+many commands have to be used to reach the destination note.
+CMD4, Vibrato
+  Syntax:       4       speed/size
+  Example:      F#3 04 462
+
+  Periodically changes the pitch of the current note. To keep the
+last vibrato effect use the command without parameters. For example:
+
+        F#3 04 462
+        ... .. 400
+        ... .. 400
+CMDA, Volume slide
+  Syntax:       A       up speed/down speed
+  Example:      C-2 01 A02
+                ... .. A02
+
+  Slowly changes the volume of the current note. The same command is
+used to increase or decrease the volume: if you use the left digit of
+the parameter field then volume will be increased, otherwise
+decreased.
+  When the volume reachs the minimum (maximum) any decrease (increase)
+volume command is ignored.
+CMDB, Pattern jump
+  Syntax:       B       order entry to jump at
+  Example:      ... .. B02
+
+  Breaks the current pattern and jumps to the specified entry in the
+order list.
+  The jump command is executed only after the frame which contains it
+has been played.
+CMDC, Volume change
+  Syntax:       C       volume
+  Example:      C-2 01 C20
+
+  Sets the volume of the current note (maximum value is 40h).
+CMDD, Pattern break
+  Syntax:       D
+  Example:      ... .. D00
+
+  Jumps out from the current pattern. Execution continues from the
+next pattern in the order array.
+CMDF, Speed change
+  Syntax:       F       speed
+  Example:      ... .. F05
+
+  Sets the song speed. Valid values are 00h thru 0Fh.
+NOTE, Note structure
+  A single note consists of several fields, as shown below:
+
+        ÚÄÄÄÄÄÄÄ note
+        ³ ÚÄÄÄÄÄ octave
+        ³ ³  ÚÄÄ @SAMPLENOTE[sample]
+        ³ ³ ÄÁ
+        C-2 06 047
+               ³À´
+               ³ À command parameters
+               ÀÄÄ @MODCMDS[command]
+
+  Inside the song editor, notes are entered from keyboard, which is
+arranged to emulate a piano keyboard (er, you may need a bit of
+fantasy):
+
+       1     2           5     6     7
+    Q     W     E     R     T     Y     U     I
+
+       S     D           G     H     J
+    Z     X     C     V     B     N     M     ,
+
+  Shift the first octave to access the third one.
+
+  To edit other fields, move the cursor on them and type a legal
+value.
+SAMPLENOTE, Note: sample field
+  The sample field of a @NOTE[note] contains the index of the instrument to
+be used when that note is played. Legal values range from 0 to 31:
+when the index is 0 the last specified sample is used, otherwise a new
+sample is selected for the current track.
+  Samples can be loaded and modified with the @SAMPED[sample editor].
+SAMPED, Sample editor
+  The sample editor is where you load and modify instruments. It's
+divided in two windows: the selection window (lower) and the editing
+window (upper).
+
+  The selection window lists all instruments currently loaded in
+memory. The number on the left of each sample is the index which
+identifies that instrument in the song editor. You can use the cursor
+keys to move the selection bar across the list and then press [Enter]
+or [Tab] to edit the selected sample. Other keys are:
+        [Alt-A] save all samples;
+        [Alt-B] load a sample from a @LIBRARY[library];
+        [Alt-C] remove all samples from memory;
+        [Alt-E] toggle between 25 and 43/50 lines video modes;
+        [Alt-L] load a sample from disk into the selected slot;
+        [Alt-O] OS shell;
+        [Alt-S] save the selected sample on disk.
+
+  The editing window allows you to change the instrument parameters.
+If you need help enter the editing window and press [F1] on the
+desired item.
+LIBRARY, Sample libraries
+  Sample libraries are an easy yet powerful way to organize samples on
+disk.
+  On start Dr. Track looks for a file named "DRT.LIB", which is a
+simple ASCII text file containing information about sample
+directories. The structure of that file is straightforward, here is an
+example:
+
+   ;***
+   ;*** DRT.LIB example
+   ;***
+   c:\drt\samples               Default sample directory
+   c:\drt\samples\synth         Synth
+   c:\samples\perco             Drums, percussions
+
+  Lines starting with a ";" character are comments and are just
+ignored, other lines contains two fields: the DOS directory name and
+the corresponding library name.
+  Using libraries you select directories by library names, not DOS
+names. This simple approach has many advantages:
+&B-&N library names are easier to remember and more "descriptive" than the
+  corresponding DOS names;
+&B-&N the directory name may have any length (if libraries are not used
+  only the first 32 characters of a directory name are stored in
+  sample files);
+&B-&N directories may be moved or renamed, and only the DRT.LIB file has
+  to be changed: this automatically updates all songs which refers
+  to library names.
+
+  The last point is very important: sample pathnames are stored in
+song files (@MODDTS[DTS]), so if you rename a directory, some .DTS files may
+still reference the old name. When loading such files Dr. Track
+allows you to skip the misnamed sample and add it later, but it's much
+better to use libraries and avoid the problem at all.
+
+  When editing a sample directory name you may use library names,
+adding the character "=" to the beginning (i.e. "=Synth", "=Drums",
+etc.).
+SAMPREPED, Sample repeat/start
+  Samples can be played "one-shot" or "looped". A sample, i.e. a
+digitized instrument, is played "one-shot" when it hasn't a repeat
+part: this means that when the last byte in the sample has been
+played, the sound stops.
+  On the other side, when the last byte of a "looped" sample is
+reached, the sample is played again starting at the offset specified
+by the "repeat start" parameter: the repeat part is played until
+another event cause the process to be interrupted (e.g. a new note, a
+command, etc.).
+  The repeat part contains "repeat length" bytes starting at "repeat
+start". Note that for one-shot samples the repeat length is 0002h and
+not 0000h (zero).
+
+                    ÚÄÄÄÄÄÄÄ &Brepeat length&N ÄÄÄÄÄÄÄ¿
+                    ³                             ³
+  ssssssssssssssssssrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrreeeeeeeeeeeee
+                    ³
+                    À &Brepeat start offset&N
+
+  Because Dr. Track can play in the background dynamically adjusting
+to new parameters, you can modify the "repeat" values on the fly and
+hear how the sound changes. This special feature will help you much
+when experimenting with looped samples.
+
+&BCommands:
+        [Left] or [-]   decrement value
+        [Right] or [+]  increment value
+        [^Left]         fast decrement
+        [^Right]        fast increment
+        [Home]          minimum value
+        [End]           maximum value
+SAMPVOLED, Sample volume
+  This parameter controls the default volume of an instrument, i.e.
+the volume used to play the instrument in a song when no other
+commands are specified.
+
+Commands:
+        [Left] or [-]   decrement value
+        [Right] or [+]  increment value
+        [^Left]         fast decrement
+        [^Right]        fast increment
+        [Home]          minimum value
+        [End]           maximum value
+SAMPDIRED, Sample directory
+  This is the directory in which this sample will be saved. If the
+name is preceeded by the "=" character, then it's interpreted as
+a @LIBRARY[library] name and the corresponding DOS directory is retrieved
+from the library configuration file ("DRT.LIB"). You may also press
+[Alt][B] and pick a library from the current list.
+SAMPFILEED, Sample filename
+  This is the file name used when samples are saved on disk.
+SAMPNAMEED, Sample name
+  This is the name of the sample. Because under DOS file names cannot
+be longer than 12 characters, Dr. Track uses this field both for
+compatibility with the Amiga format and to store sample descriptions.
+It's this name that's stored in MOD files.
+LINEED, Line editor
+  The line editor is called whenever the user needs to input a string
+of text.
+
+  When you enter the line editor, the current string is highlited to
+mean that it has not been modified yet. If you want to modify this
+string then strike any non-character key (e.g. [End] or [Left]),
+otherwise the old string will be automatically deleted when you start
+typing a new one.
+
+  &BCommands:
+        [Esc]           discard changes and exit
+        [Enter]         accept changes and exit
+        [Left]          character left
+        [Right]         character right
+        [Home]          beginning of line
+        [End]           end of line
+        [^Left]         word left
+        [^Right]        word right
+        [^Home]         delete to the beginning of line
+        [^End]          delete to the end of line
+        [Del]           delete character
+        [BackSpace]     delete character left
+SONGIO, I/O commands
+        [Alt][C]  clear song (doesn't clear samples)
+        [Alt][D]  display memory informations
+        [Alt][E]  toggle 43/50 line mode (EVA/VGA only)
+        [Alt][I]  edit instruments
+        [Alt][L]  load module
+        [Alt][M]  make and save module (SoundTracker compatible)
+        [Alt][O]  OS shell
+        [Alt][R]  read pattern from disk
+        [Alt][S]  save song (compressed module without samples)
+        [Alt][V]  mixer control (SoundBlaster Pro only)
+        [Alt][W]  write pattern to disk
+        [Alt][X]  exit to DOS
+PLAYER, MOD player
+  Dr. Track's built-in player allows you to hear an entire song or
+just the pattern you are composing.
+
+  The player is activated with [Alt][P]. From the song editor only the
+current pattern will be played, so that you can immediately listen to
+your recent work. From the order editor the entire song is played,
+starting at the current pattern position.
+
+  While it's playing, Dr. Track displays complete information
+about what's going on:
+  - the status window is updated with the current pattern, speed
+    and volume;
+  - the pattern window shows the current pattern and frame;
+  - the order window tracks the sequence of patterns played;
+  - the power meters show which tracks are playing and on which
+    channel;
+  - on VGAs the current waveform is displayed in realtime (if the
+    "graphics" option is enabled).
+
+  &BSeealso:
+        @PPRR[real time recording and testing]
+        @PPOS[OS shell]
+        @PPVC[volume control and fade out]
+
+  Press [Esc] to stop music.
+PPRR, Real-time recording and testing
+  Pressing [Alt][F5] (or [Alt][F6], etc. for the other channels)
+enters the "real-time recording" mode: when "rec" is active a message
+highlights on the selected channel and the notes you enter from the
+keyboard are placed right into the song data, at the current position.
+  Pressing [Alt][F5] again enters the "real-time testing" mode, which
+is the same as the "rec" mode except that notes are played but not
+saved.
+  Another [Alt][F5] disables both "rec" and "test" modes.
+
+  Notes are played according to the current default sample, which may
+be changed with the following keys:
+  [^F1] or [F9]   decrement default sample;
+  [^F2] or [F10]  increment default sample.
+PPOS, DOS shell and playback
+  Because Dr. Track is able to play in the background, you can shell
+to DOS with [Alt][O] and let the music playing.
+  The player doesn't need any of the standard interrupts and is very
+fast, so it cannot interfere with the programs you run, however
+remember that in most cases the amount of memory available to DOS is
+limited. Please don't run any program which uses the SoundBlaster's
+DAC, that will probably hang your system when you exit from shell (by
+the way, it's all right with FM chips).
+PPVC, Volume control and fade out
+  You can control the output volume with [F3] (decrement) and [F4]
+(increment). This are expecially useful when recording songs on
+tape (if you use EMM386, QEMM or similar products you should disable
+them before running DRT to get best sound quality).
+  Press [Alt][F] to fade music out.
+  Also, channel may be turned on and off pressing [F5], [F6], [F7] and
+[F8] for channels #1, #2, #3 and #4 respectively.
+SONGNAME, Song name
+  It's the title of the current song or module and may be up to 22
+characters long. This string is saved in @MODDTS[MOD] and @MODDTS[DTS] files.
+
+&BSeealso:
+        @LINEED[line editor    ]
+        @SONGFILENAME[song filename  ]
+SONGFILENAME, Song filename
+  It's the DOS filename used to write a @MODDTS[MOD] file on disk after a
+&Bmake module&N command ([Alt][M] from the @MODED[song editor]).
+  When saving the file in @MODDTS[DTS] format, the extension is automatically
+changed in &B.DTS&N.
+
+&BSeealso:
+        @LINEED[line editor    ]
+        @SONGNAME[song name      ]
+MODDTS, MOD and DTS file overview
+  &BMOD&N files contain all that's needed to play and edit a song:
+patterns and samples are merged in a single file which is then called
+a "module". Dr. Track is binary compatible with Amiga MOD files
+created with the SoundTracker and NoiseTracker programs.
+
+  &BDTS&N files are unique to Dr. Track. They store only patterns and
+some extra information in a mildly compressed format. Actual sample
+data is not saved within DTS files: it contains only the names of
+the samples used. When you read such a file these names are used to
+retrieve sample data from disk, which saves a lot of space when you
+have samples that are used in different songs. Sample names may refer
+to DOS directories or, much better, to sample @LIBRARY[libraries].
